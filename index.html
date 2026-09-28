@@ -694,52 +694,7 @@
       </div>
     </header>
 
-    <div class="modal-overlay hidden" id="borrowModal">
-      <div class="modal-box">
-        <h3>Data Peminjaman</h3>
-        <p class="modal-sub" id="borrowBookLabel">
-          Isi data peminjam sebelum mengambil buku.
-        </p>
-        <div class="field">
-          <label for="borrowerName">Nama peminjam</label>
-          <input type="text" id="borrowerName" autocomplete="name" />
-        </div>
-        <div class="field">
-          <label for="borrowerContact">Contact person</label>
-          <input
-            type="text"
-            id="borrowerContact"
-            placeholder="No. HP atau email"
-            autocomplete="tel"
-          />
-        </div>
-        <div class="field">
-          <label for="loanDate">Tanggal peminjaman</label>
-          <input type="date" id="loanDate" />
-        </div>
-        <div class="field">
-          <label for="loanTime">Jam peminjaman</label>
-          <input type="time" id="loanTime" />
-        </div>
-        <p class="login-error" id="borrowError"></p>
-        <div class="modal-actions">
-          <button class="btn-secondary" id="borrowCancelBtn">Batal</button>
-          <button class="btn-primary" id="borrowSubmitBtn">
-            Konfirmasi Pinjam
-          </button>
-        </div>
-      </div>
-    </div>
-
     <main>
-      <div class="my-books" id="myBooks">
-        <h2>📖 Buku yang sedang kamu pinjam</h2>
-        <p class="my-books-empty" id="myBooksEmpty">
-          Kamu belum meminjam buku. Yuk pilih satu dari rak di bawah!
-        </p>
-        <div id="loanList"></div>
-      </div>
-
       <div class="toolbar">
         <div class="search-box">
           <span>🔎</span>
@@ -762,235 +717,30 @@
       </section>
 
       <footer>
-        Dibuat untuk membantu anak-anak gemar membaca. Semua buku bisa dipinjam
-        gratis 🎉
+        Dibuat untuk membantu anak-anak gemar membaca. Data buku tersimpan
+        di Firebase Firestore 🎉
       </footer>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
-      const DEFAULT_BOOKS = [
-        {
-          id: 1,
-          title: "Petualangan Si Kancil",
-          author: "Ayu Lestari",
-          cat: "Dongeng",
-          age: "5-8 th",
-          color: "var(--coral)",
-          icon: "🐇",
-          blurb: "Kisah kancil cerdik menghindari buaya dan harimau di hutan.",
-        },
-        {
-          id: 2,
-          title: "Menjelajah Tata Surya",
-          author: "Budi Santoso",
-          cat: "Sains",
-          age: "7-10 th",
-          color: "var(--sky)",
-          icon: "🪐",
-          cover: "Tata%20Surya.jpg",
-          blurb: "Kenali planet, bintang, dan rahasia luar angkasa.",
-        },
-        {
-          id: 3,
-          title: "Bebek Buruk Rupa",
-          author: "H.C. Andersen (adaptasi)",
-          cat: "Dongeng",
-          age: "4-7 th",
-          color: "var(--sun)",
-          icon: "🦆",
-          blurb: "Cerita klasik tentang menerima diri sendiri apa adanya.",
-        },
-        {
-          id: 4,
-          title: "Aku Bisa Berhitung!",
-          author: "Rina Dewi",
-          cat: "Belajar",
-          age: "4-6 th",
-          color: "var(--leaf)",
-          icon: "🔢",
-          cover: "Belajar%20Menghitung.jpg",
-          blurb: "Belajar angka 1-20 lewat gambar dan permainan seru.",
-        },
-        {
-          id: 5,
-          title: "Legenda Danau Toba",
-          author: "Tim Cerita Nusantara",
-          cat: "Nusantara",
-          age: "6-10 th",
-          color: "var(--berry)",
-          icon: "🏞️",
-          cover: "Danau%20Toba.jpg",
-          blurb: "Cerita rakyat asal Sumatera Utara yang penuh pesan moral.",
-        },
-        {
-          id: 6,
-          title: "Dinosaurus di Halaman Belakang",
-          author: "Fajar Nugroho",
-          cat: "Sains",
-          age: "6-9 th",
-          color: "var(--coral)",
-          icon: "🦕",
-          blurb: "Fakta-fakta seru dunia dinosaurus untuk anak penasaran.",
-        },
-        {
-          id: 7,
-          title: "Si Kucing dan Sepatu Ajaib",
-          author: "Nadia Putri",
-          cat: "Fantasi",
-          age: "5-9 th",
-          color: "var(--sky)",
-          icon: "🐱",
-          blurb: "Kucing kecil menemukan sepatu yang bisa membawanya terbang.",
-        },
-        {
-          id: 8,
-          title: "Belajar Warna dan Bentuk",
-          author: "Rina Dewi",
-          cat: "Belajar",
-          age: "3-5 th",
-          color: "var(--sun)",
-          icon: "🔺",
-          cover: "Mewarnai.jpg",
-          blurb: "Pengenalan warna dan bentuk dasar untuk balita.",
-        },
-        {
-          id: 9,
-          title: "Malin Kundang",
-          author: "Tim Cerita Nusantara",
-          cat: "Nusantara",
-          age: "6-10 th",
-          color: "var(--leaf)",
-          icon: "⛵",
-          cover: "Malin%20Kundang.jpg",
-          blurb: "Legenda anak durhaka dari tanah Minangkabau.",
-        },
-        {
-          id: 10,
-          title: "Robot Kecil Penjaga Kota",
-          author: "Dimas Aditya",
-          cat: "Fantasi",
-          age: "7-10 th",
-          color: "var(--berry)",
-          icon: "🤖",
-          blurb: "Petualangan robot kecil yang melindungi kotanya dari bahaya.",
-        },
-        {
-          id: 11,
-          title: "Mengenal Hewan Laut",
-          author: "Budi Santoso",
-          cat: "Sains",
-          age: "5-9 th",
-          color: "var(--coral)",
-          icon: "🐠",
-          blurb: "Jelajahi dunia bawah laut dan makhluk-makhluk uniknya.",
-        },
-        {
-          id: 12,
-          title: "Timun Mas",
-          author: "Tim Cerita Nusantara",
-          cat: "Nusantara",
-          age: "5-8 th",
-          color: "var(--sun)",
-          icon: "🎋",
-          cover: "Timun%20Mas.jpg",
-          blurb: "Kisah keberanian Timun Mas melawan raksasa jahat.",
-        },
-      ];
+      // Firebase yang sama dengan project admin Rak Ceria.
+      const firebaseConfig = {
+        apiKey: "AIzaSyDcXnrpUG6uEVlt5WhMmGEBqq4L9JrUvMA",
+        authDomain: "tutorial-firebase-d6f84.firebaseapp.com",
+        databaseURL: "https://tutorial-firebase-d6f84-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "tutorial-firebase-d6f84",
+        storageBucket: "tutorial-firebase-d6f84.firebasestorage.app",
+        messagingSenderId: "150536235891",
+        appId: "1:150536235891:web:9166b1ba3253776e197306"
+      };
 
-      const LOAN_DAYS = 7;
-      const STORAGE_KEY = "rakceria_loans_v1";
-      const HISTORY_KEY = "rakceria_loan_history_v1";
-      const CUSTOM_BOOKS_KEY = "rakceria_custom_books_v1";
-      const REMOVED_IDS_KEY = "rakceria_removed_ids_v1";
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
+      let books = [];
       let state = { search: "", category: "Semua" };
-
-      function loadCustomBooks() {
-        try {
-          return JSON.parse(localStorage.getItem(CUSTOM_BOOKS_KEY)) || [];
-        } catch (e) {
-          return [];
-        }
-      }
-      function saveCustomBooks(list) {
-        try {
-          localStorage.setItem(CUSTOM_BOOKS_KEY, JSON.stringify(list));
-        } catch (e) {
-          console.error("Gagal menyimpan buku tambahan", e);
-        }
-      }
-      function loadRemovedIds() {
-        try {
-          return JSON.parse(localStorage.getItem(REMOVED_IDS_KEY)) || [];
-        } catch (e) {
-          return [];
-        }
-      }
-      function saveRemovedIds(list) {
-        try {
-          localStorage.setItem(REMOVED_IDS_KEY, JSON.stringify(list));
-        } catch (e) {
-          console.error("Gagal menyimpan daftar buku terhapus", e);
-        }
-      }
-
-      let customBooks = loadCustomBooks();
-      let removedIds = loadRemovedIds();
-
-      function getBooks() {
-        return [...DEFAULT_BOOKS, ...customBooks].filter(
-          (b) => !removedIds.includes(b.id),
-        );
-      }
-
-      function loadLoans() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          return raw ? JSON.parse(raw) : {};
-        } catch (e) {
-          return {};
-        }
-      }
-      function saveLoans(loans) {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(loans));
-        } catch (e) {
-          console.error("Gagal menyimpan data pinjaman", e);
-        }
-      }
-
-      function loadLoanHistory() {
-        try {
-          const raw = localStorage.getItem(HISTORY_KEY);
-          return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          return [];
-        }
-      }
-      function saveLoanHistory(history) {
-        try {
-          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-        } catch (e) {
-          console.error("Gagal menyimpan history peminjaman", e);
-        }
-      }
-
-      let loans = loadLoans();
-      let loanHistory = loadLoanHistory();
-
-      function normalizeLoan(loan) {
-        if (typeof loan === "number") {
-          return {
-            borrowerName: "",
-            contact: "",
-            loanDate: "",
-            loanTime: "",
-            borrowedAt: loan - LOAN_DAYS * 24 * 60 * 60 * 1000,
-            dueAt: loan,
-          };
-        }
-        return loan || {};
-      }
 
       function escapeHtml(value) {
         return String(value ?? "")
@@ -1002,7 +752,7 @@
       }
 
       function categories() {
-        return ["Semua", ...Array.from(new Set(getBooks().map((b) => b.cat)))];
+        return ["Semua", ...Array.from(new Set(books.map((b) => b.cat).filter(Boolean)))];
       }
 
       function renderChips() {
@@ -1020,86 +770,18 @@
         });
       }
 
-      function fmtDate(ts) {
-        return new Date(ts).toLocaleDateString("id-ID", {
-          day: "numeric",
-          month: "short",
-        });
-      }
-
-      function fmtHistoryDate(ts) {
-        return new Date(ts).toLocaleDateString("id-ID", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
-      }
-
-      function renderMyBooks() {
-        const ids = Object.keys(loans);
-        const emptyEl = document.getElementById("myBooksEmpty");
-        const listEl = document.getElementById("loanList");
-        listEl.innerHTML = "";
-        if (ids.length === 0) {
-          emptyEl.style.display = "block";
-          return;
-        }
-        emptyEl.style.display = "none";
-        ids.forEach((idStr) => {
-          const id = Number(idStr);
-          const book = getBooks().find((b) => b.id === id);
-          if (!book) return;
-          const loan = normalizeLoan(loans[idStr]);
-          const row = document.createElement("div");
-          row.className = "loan-row";
-          row.innerHTML = `
-      <div class="loan-info">
-        <span>${book.icon}</span>
-        <div>
-          <div class="loan-title">${book.title}</div>
-          <div class="loan-details">
-            <span>Peminjam: ${escapeHtml(loan.borrowerName || "Belum diisi")}</span>
-            <span>Contact: ${escapeHtml(loan.contact || "Belum diisi")}</span>
-            <span>Dipinjam: ${escapeHtml(loan.loanDate || "Data lama")} ${escapeHtml(loan.loanTime || "")}</span>
-            <span class="loan-due">Kembalikan sebelum ${fmtDate(loan.dueAt)}</span>
-          </div>
-        </div>
-      </div>
-      <button class="return-btn" data-id="${id}">Kembalikan</button>
-    `;
-          listEl.appendChild(row);
-        });
-        listEl.querySelectorAll(".return-btn").forEach((btn) => {
-          btn.onclick = () => {
-            const loan = normalizeLoan(loans[btn.dataset.id]);
-            const historyItem = loanHistory.find(
-              (item) => item.loanId === loan.loanId,
-            );
-            if (historyItem) {
-              historyItem.status = "Dikembalikan";
-              historyItem.returnedAt = Date.now();
-              saveLoanHistory(loanHistory);
-            }
-            delete loans[btn.dataset.id];
-            saveLoans(loans);
-            render();
-          };
-        });
-      }
-
       function renderGrid() {
         const grid = document.getElementById("bookGrid");
         const empty = document.getElementById("emptyState");
         grid.innerHTML = "";
+
         const q = state.search.trim().toLowerCase();
-        const filtered = getBooks().filter((b) => {
-          const matchCat =
-            state.category === "Semua" || b.cat === state.category;
-          const matchQ =
-            !q ||
-            b.title.toLowerCase().includes(q) ||
-            b.author.toLowerCase().includes(q);
+        const filtered = books.filter((b) => {
+          const title = String(b.title || "").toLowerCase();
+          const author = String(b.author || "").toLowerCase();
+          const cat = String(b.cat || "");
+          const matchCat = state.category === "Semua" || cat === state.category;
+          const matchQ = !q || title.includes(q) || author.includes(q);
           return matchCat && matchQ;
         });
 
@@ -1115,135 +797,86 @@
         empty.style.display = "none";
 
         filtered.forEach((book) => {
-          const isBorrowed = !!loans[book.id];
           const card = document.createElement("div");
           card.className = "book";
-          card.innerHTML = `
-      <div class="book-cover" style="background:${book.color};">${book.cover ? `<img src="${book.cover}" alt="Sampul ${book.title}">` : book.icon}</div>
-      <div class="book-body">
-        <div class="book-title">${book.title}</div>
-        <div class="book-author">oleh ${book.author}</div>
-        <div class="book-age">${book.age}</div>
-        <div class="book-blurb">${book.blurb}</div>
-        <button class="borrow-btn ${isBorrowed ? "borrowed" : "available"}" data-id="${book.id}" ${isBorrowed ? "disabled" : ""}>
-          ${isBorrowed ? "Sedang Dipinjam" : "Pinjam Buku Ini"}
-        </button>
-      </div>
-    `;
-          grid.appendChild(card);
-        });
+          const title = escapeHtml(book.title || "Tanpa Judul");
+          const author = escapeHtml(book.author || "Tidak diketahui");
+          const age = escapeHtml(book.age || "");
+          const blurb = escapeHtml(book.blurb || "");
+          const icon = escapeHtml(book.icon || "📚");
+          const color = escapeHtml(book.color || "var(--sky)");
+          const cover = book.cover ? String(book.cover) : "";
 
-        grid.querySelectorAll(".borrow-btn.available").forEach((btn) => {
-          btn.onclick = () => {
-            openBorrowModal(Number(btn.dataset.id));
-          };
+          card.innerHTML = `
+            <div class="book-cover" style="background:${color};">
+              ${cover
+                ? `<img src="${escapeHtml(cover)}" alt="Sampul ${title}" onerror="this.style.display='none'; this.parentElement.textContent='${icon}'">`
+                : icon}
+            </div>
+            <div class="book-body">
+              <div class="book-title">${title}</div>
+              <div class="book-author">oleh ${author}</div>
+              ${age ? `<div class="book-age">${age}</div>` : ""}
+              <div class="book-blurb">${blurb}</div>
+            </div>
+          `;
+          grid.appendChild(card);
         });
       }
 
       function renderBadge() {
-        const total = getBooks().length;
-        const dipinjam = Object.keys(loans).length;
+        const total = books.length;
         document.getElementById("stockBadge").textContent =
-          `${total} judul tersedia · ${dipinjam} sedang kamu pinjam`;
+          `${total} judul tersedia · tersinkron dengan database`;
       }
 
       function render() {
         renderChips();
-        renderMyBooks();
         renderGrid();
         renderBadge();
       }
 
       document.getElementById("searchInput").addEventListener("input", (e) => {
         state.search = e.target.value;
-        render();
+        renderGrid();
       });
 
-      let pendingBookId = null;
-      const borrowModal = document.getElementById("borrowModal");
-      const borrowError = document.getElementById("borrowError");
+      function startFirestoreListener() {
+        db.collection("books")
+          .onSnapshot(
+            (snapshot) => {
+              books = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }));
 
-      function localDateValue(date) {
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${date.getFullYear()}-${month}-${day}`;
+              books.sort((a, b) =>
+                String(a.title || "").localeCompare(String(b.title || ""), "id")
+              );
+
+              if (!categories().includes(state.category)) {
+                state.category = "Semua";
+              }
+
+              render();
+            },
+            (error) => {
+              console.error("Firestore error:", error);
+              books = [];
+              state.category = "Semua";
+              render();
+              document.getElementById("stockBadge").textContent =
+                "Gagal memuat rak buku";
+              document.getElementById("emptyState").style.display = "block";
+              document.getElementById("emptyState").innerHTML =
+                `<div>⚠️</div>Gagal mengambil data buku dari Firebase.`;
+            }
+          );
       }
 
-      function localTimeValue(date) {
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        return `${hours}:${minutes}`;
-      }
-
-      function openBorrowModal(bookId) {
-        const book = getBooks().find((item) => item.id === bookId);
-        if (!book) return;
-        pendingBookId = bookId;
-        document.getElementById("borrowBookLabel").textContent =
-          `Lengkapi data untuk meminjam “${book.title}”.`;
-        document.getElementById("borrowerName").value = "";
-        document.getElementById("borrowerContact").value = "";
-        const now = new Date();
-        document.getElementById("loanDate").value = localDateValue(now);
-        document.getElementById("loanTime").value = localTimeValue(now);
-        borrowError.textContent = "";
-        borrowModal.classList.remove("hidden");
-      }
-
-      function closeBorrowModal() {
-        pendingBookId = null;
-        borrowModal.classList.add("hidden");
-      }
-
-      document.getElementById("borrowCancelBtn").onclick = closeBorrowModal;
-      document.getElementById("borrowSubmitBtn").onclick = () => {
-        const borrowerName = document
-          .getElementById("borrowerName")
-          .value.trim();
-        const contact = document.getElementById("borrowerContact").value.trim();
-        const loanDate = document.getElementById("loanDate").value;
-        const loanTime = document.getElementById("loanTime").value;
-
-        if (!borrowerName || !contact || !loanDate || !loanTime) {
-          borrowError.textContent = "Semua data peminjaman wajib diisi, ya.";
-          return;
-        }
-
-        const start = new Date(`${loanDate}T${loanTime}`);
-        const borrowedAt = Number.isNaN(start.getTime())
-          ? Date.now()
-          : start.getTime();
-        const loanId = `${pendingBookId}-${borrowedAt}`;
-        const book = getBooks().find((item) => item.id === pendingBookId);
-        const loan = {
-          loanId,
-          borrowerName,
-          contact,
-          loanDate,
-          loanTime,
-          borrowedAt,
-          dueAt: borrowedAt + LOAN_DAYS * 24 * 60 * 60 * 1000,
-        };
-        loans[pendingBookId] = loan;
-        loanHistory.push({
-          loanId,
-          bookId: pendingBookId,
-          bookTitle: book ? book.title : "Buku tidak ditemukan",
-          borrowerName,
-          contact,
-          loanDate,
-          loanTime,
-          borrowedAt,
-          status: "Sedang dipinjam",
-          returnedAt: null,
-        });
-        saveLoans(loans);
-        saveLoanHistory(loanHistory);
-        closeBorrowModal();
-        render();
-      };
-
-      render();
+      // Tidak ada DEFAULT_BOOKS dan tidak ada localStorage untuk daftar buku.
+      // Firestore menjadi satu-satunya sumber data pada halaman publik.
+      startFirestoreListener();
     </script>
   </body>
 </html>
