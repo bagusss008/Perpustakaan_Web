@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Rak Ceria — Perpustakaan Anak</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content="0; url=admin.html" />
+    <script>
+      window.location.replace("admin.html");
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #eaf6fb;
+        --bg-2: #ffffff;
+        --ink: #1f2a37;
+        --ink-soft: #55606b;
+        --wood: #c98a4b;
+        --wood-dark: #a8672e;
+        --coral: #ff6b5b;
+        --sun: #ffc94a;
+        --leaf: #3fa875;
+        --sky: #3e8eed;
+        --berry: #9b5de5;
+        --card-shadow: 0 6px 0 rgba(0, 0, 0, 0.08);
+        --radius: 14px;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-sizing: border-box;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #132330;
+          --bg-2: #1b3040;
+          --ink: #f1f5f8;
+          --ink-soft: #b9c6d0;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #132330;
+        --bg-2: #1b3040;
+        --ink: #f1f5f8;
+        --ink-soft: #b9c6d0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background-color: var(--bg);
+        background-image:
+          radial-gradient(rgba(62, 142, 237, 0.12) 1px, transparent 1px),
+          linear-gradient(135deg, rgba(255, 201, 74, 0.08), transparent 42%);
+        background-size:
+          18px 18px,
+          100% 100%;
+        color: var(--ink);
+        font-family: "Nunito", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        animation: page-enter 0.7s ease both;
+      }
+      h1,
+      h2,
+      h3,
+      .heading {
+        font-family: "Baloo 2", sans-serif;
+      }
+
+      header.hero {
+        padding: 28px 20px 22px;
+        background: url("revisi background.png") center / cover no-repeat;
+        color: #fff;
+        border-bottom-left-radius: 32px;
+        border-bottom-right-radius: 32px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 0 rgba(62, 142, 237, 0.12);
+      }
+      header.hero::after {
+        content: "📚 🎈 🚀 🦄";
+        position: absolute;
+        right: -10px;
+        bottom: -18px;
+        font-size: 34px;
+        opacity: 0.25;
+        letter-spacing: 8px;
+        animation: hero-decor 8s ease-in-out infinite alternate;
+      }
+      .hero-inner {
+        max-width: 980px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .brand-logo {
+        display: block;
+        width: min(180px, 48vw);
+        height: auto;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        background: #fff;
+        padding: 6px;
+        animation: logo-enter 0.7s 0.1s ease both;
+      }
+      .hero h1 {
+        font-size: clamp(28px, 5vw, 42px);
+        margin: 0 0 6px;
+        font-weight: 800;
+        animation: content-enter 0.6s 0.22s ease both;
+      }
+      .hero p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.95;
+        max-width: 520px;
+        line-height: 1.5;
+        animation: content-enter 0.6s 0.32s ease both;
+      }
+      .hero-badge {
+        display: inline-block;
+        margin-top: 14px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 14px;
+        animation: content-enter 0.6s 0.42s ease both;
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(6px);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 22px 20px 60px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .search-box {
+        flex: 1 1 220px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-2);
+        border: 2px solid rgba(62, 142, 237, 0.16);
+        border-radius: 999px;
+        padding: 10px 16px;
+        box-shadow: var(--card-shadow);
+        transition:
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+      .search-box:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 9px 0 rgba(0, 0, 0, 0.08);
+      }
+      .search-box input {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        font-family: "Nunito", sans-serif;
+        font-size: 15px;
+        color: var(--ink);
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        border: none;
+        cursor: pointer;
+        padding: 9px 15px;
+        border-radius: 999px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 700;
+        font-size: 13.5px;
+        background: var(--bg-2);
+        color: var(--ink-soft);
+        box-shadow: var(--card-shadow);
+        transition: transform 0.12s ease;
+      }
+      .chip:hover {
+        transform: translateY(-2px);
+      }
+      .chip.active {
+        background: var(--leaf);
+        color: #fff;
+        box-shadow: 0 4px 0 rgba(63, 168, 117, 0.25);
+      }
+
+      section.shelf-section {
+        margin-bottom: 30px;
+      }
+      .shelf-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 12px 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .shelf-title::after {
+        content: "";
+        height: 6px;
+        flex: 1;
+        margin-left: 6px;
+        border-radius: 999px;
+        background: linear-gradient(
+          90deg,
+          var(--wood),
+          rgba(201, 138, 75, 0.08)
+        );
+      }
+
+      .my-books {
+        background: var(--bg-2);
+        border-left: 6px solid var(--coral);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 26px;
+      }
+      .my-books h2 {
+        margin: 0 0 10px;
+        font-size: 19px;
+      }
+      .my-books-empty {
+        color: var(--ink-soft);
+        font-size: 14.5px;
+        margin: 0;
+      }
+      .loan-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 0;
+        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+      }
+      .loan-row:first-of-type {
+        border-top: none;
+      }
+      .loan-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .loan-title {
+        font-weight: 700;
+        font-size: 14.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .loan-due {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .return-btn {
+        border: none;
+        background: var(--coral);
+        color: #fff;
+        font-weight: 700;
+        padding: 7px 13px;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px 14px;
+        padding-bottom: 14px;
+        border-bottom: 10px solid var(--wood);
+        border-image: linear-gradient(180deg, var(--wood), var(--wood-dark)) 1;
+      }
+      .book {
+        background: var(--bg-2);
+        border-radius: 10px 10px 4px 4px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: book-enter 0.55s ease both;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .book:hover {
+        transform: translateY(-6px) rotate(-0.5deg);
+        box-shadow: 0 12px 0 rgba(0, 0, 0, 0.1);
+      }
+      .book-cover {
+        height: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        color: #fff;
+      }
+      .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.35s ease;
+      }
+      .book:hover .book-cover img {
+        transform: scale(1.07);
+      }
+      .book-body {
+        padding: 10px 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+      }
+      .book-title {
+        font-weight: 800;
+        font-size: 14.5px;
+        line-height: 1.25;
+        font-family: "Baloo 2", sans-serif;
+      }
+      .book-author {
+        font-size: 12px;
+        color: var(--ink-soft);
+        margin-top: -4px;
+      }
+      .book-blurb {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        line-height: 1.4;
+        flex: 1;
+      }
+      .book-age {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        background: rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        width: fit-content;
+      }
+      .borrow-btn {
+        border: none;
+        cursor: pointer;
+        margin-top: 4px;
+        padding: 9px;
+        border-radius: 8px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 13.5px;
+        transition:
+          transform 0.15s ease,
+          filter 0.15s ease;
+      }
+      .borrow-btn.available:hover,
+      .return-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+      }
+      .borrow-btn:active,
+      .return-btn:active {
+        transform: translateY(1px);
+      }
+      .borrow-btn.available {
+        background: var(--leaf);
+        color: #fff;
+      }
+      .borrow-btn.borrowed {
+        background: rgba(0, 0, 0, 0.08);
+        color: var(--ink-soft);
+        cursor: default;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 10px;
+        color: var(--ink-soft);
+      }
+      .empty-state div {
+        font-size: 38px;
+        margin-bottom: 8px;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 12.5px;
+        padding: 10px 20px 30px;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 30, 40, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 50;
+      }
+      .modal-overlay.hidden {
+        display: none;
+      }
+      .modal-box {
+        background: var(--bg-2);
+        border-radius: var(--radius);
+        padding: 22px 22px 20px;
+        max-width: 380px;
+        width: 100%;
+        box-shadow: 0 12px 0 rgba(0, 0, 0, 0.12);
+        max-height: 88vh;
+        overflow-y: auto;
+      }
+      .modal-box h3 {
+        margin: 0 0 4px;
+        font-size: 20px;
+      }
+      .modal-box .modal-sub {
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin: 0 0 14px;
+      }
+      .loan-details {
+        display: grid;
+        gap: 2px;
+        margin-top: 3px;
+        color: var(--ink-soft);
+        font-size: 12px;
+      }
+      .field {
+        margin-bottom: 12px;
+      }
+      .field label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        margin-bottom: 4px;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 9px 11px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(0, 0, 0, 0.12);
+        font-family: "Nunito", sans-serif;
+        font-size: 14px;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .field textarea {
+        resize: vertical;
+        min-height: 56px;
+      }
+      .file-hint {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 11.5px;
+        margin-top: 5px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .btn-primary,
+      .btn-secondary {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+      }
+      .btn-primary {
+        background: var(--sky);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: rgba(0, 0, 0, 0.07);
+        color: var(--ink-soft);
+      }
+      .login-error {
+        color: var(--coral);
+        font-size: 13px;
+        font-weight: 700;
+        margin: 4px 0 0;
+        min-height: 16px;
+      }
+      .history-list {
+        display: grid;
+        gap: 10px;
+      }
+      .history-item {
+        padding: 13px 14px;
+        border: 1px solid rgba(62, 142, 237, 0.12);
+        border-radius: 12px;
+        background: rgba(62, 142, 237, 0.045);
+        box-shadow: 0 3px 0 rgba(62, 142, 237, 0.07);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .history-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 rgba(62, 142, 237, 0.1);
+      }
+      .history-title {
+        font-weight: 800;
+        font-size: 14.5px;
+      }
+      .history-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        color: var(--ink-soft);
+        font-size: 12.5px;
+        margin-top: 8px;
+      }
+      .history-details span:not(.history-status) {
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+      .history-status {
+        color: var(--leaf);
+        font-weight: 800;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: rgba(63, 168, 117, 0.13);
+      }
+      @media (max-width: 560px) {
+        .history-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .history-status {
+          width: fit-content;
+        }
+      }
+
+      .book {
+        position: relative;
+      }
+      .book-delete {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        border: none;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        padding: 5px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      .book-delete:hover {
+        transform: scale(1.05);
+        background: var(--coral);
+      }
+
+      @keyframes page-enter {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes logo-enter {
+        from {
+          opacity: 0;
+          transform: translateY(-12px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes content-enter {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes hero-decor {
+        from {
+          transform: translateX(0) rotate(-2deg);
+        }
+        to {
+          transform: translateX(-18px) rotate(2deg);
+        }
+      }
+      @keyframes book-enter {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .book:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+      .book:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      .book:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+      .book:nth-child(5) {
+        animation-delay: 0.2s;
+      }
+      .book:nth-child(6) {
+        animation-delay: 0.25s;
+      }
+      .book:nth-child(7) {
+        animation-delay: 0.3s;
+      }
+      .book:nth-child(8) {
+        animation-delay: 0.35s;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition: none;
+        }
+        .book:hover,
+        .search-box:focus-within {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <img
+          class="brand-logo"
+          src="logo%20perpustakaan.png"
+          alt="Logo perpustakaan anak"
+        />
+        <h1>Rak Ceria 🌈</h1>
+        <p>
+          Perpustakaan online untuk anak-anak. Pilih buku, pinjam gratis, baca
+          sepuasnya — mudah dan menyenangkan!
+        </p>
+        <span class="hero-badge" id="stockBadge">Memuat rak buku…</span>
+      </div>
+    </header>
+
+    <div class="modal-overlay hidden" id="borrowModal">
+      <div class="modal-box">
+        <h3>Data Peminjaman</h3>
+        <p class="modal-sub" id="borrowBookLabel">
+          Isi data peminjam sebelum mengambil buku.
+        </p>
+        <div class="field">
+          <label for="borrowerName">Nama peminjam</label>
+          <input type="text" id="borrowerName" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="borrowerContact">Contact person</label>
+          <input
+            type="text"
+            id="borrowerContact"
+            placeholder="No. HP atau email"
+            autocomplete="tel"
+          />
+        </div>
+        <div class="field">
+          <label for="loanDate">Tanggal peminjaman</label>
+          <input type="date" id="loanDate" />
+        </div>
+        <div class="field">
+          <label for="loanTime">Jam peminjaman</label>
+          <input type="time" id="loanTime" />
+        </div>
+        <p class="login-error" id="borrowError"></p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="borrowCancelBtn">Batal</button>
+          <button class="btn-primary" id="borrowSubmitBtn">
+            Konfirmasi Pinjam
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <div class="my-books" id="myBooks">
+        <h2>📖 Buku yang sedang kamu pinjam</h2>
+        <p class="my-books-empty" id="myBooksEmpty">
+          Kamu belum meminjam buku. Yuk pilih satu dari rak di bawah!
+        </p>
+        <div id="loanList"></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span>🔎</span>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Cari judul atau penulis buku..."
+          />
+        </div>
+      </div>
+      <div class="toolbar chips" id="categoryChips"></div>
+
+      <section class="shelf-section">
+        <div class="shelf-title" id="shelfTitle">🪄 Semua Buku</div>
+        <div class="grid" id="bookGrid"></div>
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div>🙈</div>
+          Buku tidak ditemukan. Coba kata lain, ya!
+        </div>
+      </section>
+
+      <footer>
+        Dibuat untuk membantu anak-anak gemar membaca. Semua buku bisa dipinjam
+        gratis 🎉
+      </footer>
+    </main>
+
+    <script>
+      const DEFAULT_BOOKS = [
+        {
+          id: 1,
+          title: "Petualangan Si Kancil",
+          author: "Ayu Lestari",
+          cat: "Dongeng",
+          age: "5-8 th",
+          color: "var(--coral)",
+          icon: "🐇",
+          blurb: "Kisah kancil cerdik menghindari buaya dan harimau di hutan.",
+        },
+        {
+          id: 2,
+          title: "Menjelajah Tata Surya",
+          author: "Budi Santoso",
+          cat: "Sains",
+          age: "7-10 th",
+          color: "var(--sky)",
+          icon: "🪐",
+          cover: "Tata%20Surya.jpg",
+          blurb: "Kenali planet, bintang, dan rahasia luar angkasa.",
+        },
+        {
+          id: 3,
+          title: "Bebek Buruk Rupa",
+          author: "H.C. Andersen (adaptasi)",
+          cat: "Dongeng",
+          age: "4-7 th",
+          color: "var(--sun)",
+          icon: "🦆",
+          blurb: "Cerita klasik tentang menerima diri sendiri apa adanya.",
+        },
+        {
+          id: 4,
+          title: "Aku Bisa Berhitung!",
+          author: "Rina Dewi",
+          cat: "Belajar",
+          age: "4-6 th",
+          color: "var(--leaf)",
+          icon: "🔢",
+          cover: "Belajar%20Menghitung.jpg",
+          blurb: "Belajar angka 1-20 lewat gambar dan permainan seru.",
+        },
+        {
+          id: 5,
+          title: "Legenda Danau Toba",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "6-10 th",
+          color: "var(--berry)",
+          icon: "🏞️",
+          cover: "Danau%20Toba.jpg",
+          blurb: "Cerita rakyat asal Sumatera Utara yang penuh pesan moral.",
+        },
+        {
+          id: 6,
+          title: "Dinosaurus di Halaman Belakang",
+          author: "Fajar Nugroho",
+          cat: "Sains",
+          age: "6-9 th",
+          color: "var(--coral)",
+          icon: "🦕",
+          blurb: "Fakta-fakta seru dunia dinosaurus untuk anak penasaran.",
+        },
+        {
+          id: 7,
+          title: "Si Kucing dan Sepatu Ajaib",
+          author: "Nadia Putri",
+          cat: "Fantasi",
+          age: "5-9 th",
+          color: "var(--sky)",
+          icon: "🐱",
+          blurb: "Kucing kecil menemukan sepatu yang bisa membawanya terbang.",
+        },
+        {
+          id: 8,
+          title: "Belajar Warna dan Bentuk",
+          author: "Rina Dewi",
+          cat: "Belajar",
+          age: "3-5 th",
+          color: "var(--sun)",
+          icon: "🔺",
+          cover: "Mewarnai.jpg",
+          blurb: "Pengenalan warna dan bentuk dasar untuk balita.",
+        },
+        {
+          id: 9,
+          title: "Malin Kundang",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "6-10 th",
+          color: "var(--leaf)",
+          icon: "⛵",
+          cover: "Malin%20Kundang.jpg",
+          blurb: "Legenda anak durhaka dari tanah Minangkabau.",
+        },
+        {
+          id: 10,
+          title: "Robot Kecil Penjaga Kota",
+          author: "Dimas Aditya",
+          cat: "Fantasi",
+          age: "7-10 th",
+          color: "var(--berry)",
+          icon: "🤖",
+          blurb: "Petualangan robot kecil yang melindungi kotanya dari bahaya.",
+        },
+        {
+          id: 11,
+          title: "Mengenal Hewan Laut",
+          author: "Budi Santoso",
+          cat: "Sains",
+          age: "5-9 th",
+          color: "var(--coral)",
+          icon: "🐠",
+          blurb: "Jelajahi dunia bawah laut dan makhluk-makhluk uniknya.",
+        },
+        {
+          id: 12,
+          title: "Timun Mas",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "5-8 th",
+          color: "var(--sun)",
+          icon: "🎋",
+          cover: "Timun%20Mas.jpg",
+          blurb: "Kisah keberanian Timun Mas melawan raksasa jahat.",
+        },
+      ];
+
+      const LOAN_DAYS = 7;
+      const STORAGE_KEY = "rakceria_loans_v1";
+      const HISTORY_KEY = "rakceria_loan_history_v1";
+      const CUSTOM_BOOKS_KEY = "rakceria_custom_books_v1";
+      const REMOVED_IDS_KEY = "rakceria_removed_ids_v1";
+
+      let state = { search: "", category: "Semua" };
+
+      function loadCustomBooks() {
+        try {
+          return JSON.parse(localStorage.getItem(CUSTOM_BOOKS_KEY)) || [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveCustomBooks(list) {
+        try {
+          localStorage.setItem(CUSTOM_BOOKS_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.error("Gagal menyimpan buku tambahan", e);
+        }
+      }
+      function loadRemovedIds() {
+        try {
+          return JSON.parse(localStorage.getItem(REMOVED_IDS_KEY)) || [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveRemovedIds(list) {
+        try {
+          localStorage.setItem(REMOVED_IDS_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.error("Gagal menyimpan daftar buku terhapus", e);
+        }
+      }
+
+      let customBooks = loadCustomBooks();
+      let removedIds = loadRemovedIds();
+
+      function getBooks() {
+        return [...DEFAULT_BOOKS, ...customBooks].filter(
+          (b) => !removedIds.includes(b.id),
+        );
+      }
+
+      function loadLoans() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+          return {};
+        }
+      }
+      function saveLoans(loans) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(loans));
+        } catch (e) {
+          console.error("Gagal menyimpan data pinjaman", e);
+        }
+      }
+
+      function loadLoanHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveLoanHistory(history) {
+        try {
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        } catch (e) {
+          console.error("Gagal menyimpan history peminjaman", e);
+        }
+      }
+
+      let loans = loadLoans();
+      let loanHistory = loadLoanHistory();
+
+      function normalizeLoan(loan) {
+        if (typeof loan === "number") {
+          return {
+            borrowerName: "",
+            contact: "",
+            loanDate: "",
+            loanTime: "",
+            borrowedAt: loan - LOAN_DAYS * 24 * 60 * 60 * 1000,
+            dueAt: loan,
+          };
+        }
+        return loan || {};
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function categories() {
+        return ["Semua", ...Array.from(new Set(getBooks().map((b) => b.cat)))];
+      }
+
+      function renderChips() {
+        const wrap = document.getElementById("categoryChips");
+        wrap.innerHTML = "";
+        categories().forEach((cat) => {
+          const btn = document.createElement("button");
+          btn.className = "chip" + (state.category === cat ? " active" : "");
+          btn.textContent = cat;
+          btn.onclick = () => {
+            state.category = cat;
+            render();
+          };
+          wrap.appendChild(btn);
+        });
+      }
+
+      function fmtDate(ts) {
+        return new Date(ts).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "short",
+        });
+      }
+
+      function fmtHistoryDate(ts) {
+        return new Date(ts).toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      }
+
+      function renderMyBooks() {
+        const ids = Object.keys(loans);
+        const emptyEl = document.getElementById("myBooksEmpty");
+        const listEl = document.getElementById("loanList");
+        listEl.innerHTML = "";
+        if (ids.length === 0) {
+          emptyEl.style.display = "block";
+          return;
+        }
+        emptyEl.style.display = "none";
+        ids.forEach((idStr) => {
+          const id = Number(idStr);
+          const book = getBooks().find((b) => b.id === id);
+          if (!book) return;
+          const loan = normalizeLoan(loans[idStr]);
+          const row = document.createElement("div");
+          row.className = "loan-row";
+          row.innerHTML = `
+      <div class="loan-info">
+        <span>${book.icon}</span>
+        <div>
+          <div class="loan-title">${book.title}</div>
+          <div class="loan-details">
+            <span>Peminjam: ${escapeHtml(loan.borrowerName || "Belum diisi")}</span>
+            <span>Contact: ${escapeHtml(loan.contact || "Belum diisi")}</span>
+            <span>Dipinjam: ${escapeHtml(loan.loanDate || "Data lama")} ${escapeHtml(loan.loanTime || "")}</span>
+            <span class="loan-due">Kembalikan sebelum ${fmtDate(loan.dueAt)}</span>
+          </div>
+        </div>
+      </div>
+      <button class="return-btn" data-id="${id}">Kembalikan</button>
+    `;
+          listEl.appendChild(row);
+        });
+        listEl.querySelectorAll(".return-btn").forEach((btn) => {
+          btn.onclick = () => {
+            const loan = normalizeLoan(loans[btn.dataset.id]);
+            const historyItem = loanHistory.find(
+              (item) => item.loanId === loan.loanId,
+            );
+            if (historyItem) {
+              historyItem.status = "Dikembalikan";
+              historyItem.returnedAt = Date.now();
+              saveLoanHistory(loanHistory);
+            }
+            delete loans[btn.dataset.id];
+            saveLoans(loans);
+            render();
+          };
+        });
+      }
+
+      function renderGrid() {
+        const grid = document.getElementById("bookGrid");
+        const empty = document.getElementById("emptyState");
+        grid.innerHTML = "";
+        const q = state.search.trim().toLowerCase();
+        const filtered = getBooks().filter((b) => {
+          const matchCat =
+            state.category === "Semua" || b.cat === state.category;
+          const matchQ =
+            !q ||
+            b.title.toLowerCase().includes(q) ||
+            b.author.toLowerCase().includes(q);
+          return matchCat && matchQ;
+        });
+
+        document.getElementById("shelfTitle").textContent =
+          state.category === "Semua"
+            ? "🪄 Semua Buku"
+            : `🪄 Kategori: ${state.category}`;
+
+        if (filtered.length === 0) {
+          empty.style.display = "block";
+          return;
+        }
+        empty.style.display = "none";
+
+        filtered.forEach((book) => {
+          const isBorrowed = !!loans[book.id];
+          const card = document.createElement("div");
+          card.className = "book";
+          card.innerHTML = `
+      <div class="book-cover" style="background:${book.color};">${book.cover ? `<img src="${book.cover}" alt="Sampul ${book.title}">` : book.icon}</div>
+      <div class="book-body">
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">oleh ${book.author}</div>
+        <div class="book-age">${book.age}</div>
+        <div class="book-blurb">${book.blurb}</div>
+        <button class="borrow-btn ${isBorrowed ? "borrowed" : "available"}" data-id="${book.id}" ${isBorrowed ? "disabled" : ""}>
+          ${isBorrowed ? "Sedang Dipinjam" : "Pinjam Buku Ini"}
+        </button>
+      </div>
+    `;
+          grid.appendChild(card);
+        });
+
+        grid.querySelectorAll(".borrow-btn.available").forEach((btn) => {
+          btn.onclick = () => {
+            openBorrowModal(Number(btn.dataset.id));
+          };
+        });
+      }
+
+      function renderBadge() {
+        const total = getBooks().length;
+        const dipinjam = Object.keys(loans).length;
+        document.getElementById("stockBadge").textContent =
+          `${total} judul tersedia · ${dipinjam} sedang kamu pinjam`;
+      }
+
+      function render() {
+        renderChips();
+        renderMyBooks();
+        renderGrid();
+        renderBadge();
+      }
+
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        state.search = e.target.value;
+        render();
+      });
+
+      let pendingBookId = null;
+      const borrowModal = document.getElementById("borrowModal");
+      const borrowError = document.getElementById("borrowError");
+
+      function localDateValue(date) {
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${date.getFullYear()}-${month}-${day}`;
+      }
+
+      function localTimeValue(date) {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`;
+      }
+
+      function openBorrowModal(bookId) {
+        const book = getBooks().find((item) => item.id === bookId);
+        if (!book) return;
+        pendingBookId = bookId;
+        document.getElementById("borrowBookLabel").textContent =
+          `Lengkapi data untuk meminjam “${book.title}”.`;
+        document.getElementById("borrowerName").value = "";
+        document.getElementById("borrowerContact").value = "";
+        const now = new Date();
+        document.getElementById("loanDate").value = localDateValue(now);
+        document.getElementById("loanTime").value = localTimeValue(now);
+        borrowError.textContent = "";
+        borrowModal.classList.remove("hidden");
+      }
+
+      function closeBorrowModal() {
+        pendingBookId = null;
+        borrowModal.classList.add("hidden");
+      }
+
+      document.getElementById("borrowCancelBtn").onclick = closeBorrowModal;
+      document.getElementById("borrowSubmitBtn").onclick = () => {
+        const borrowerName = document
+          .getElementById("borrowerName")
+          .value.trim();
+        const contact = document.getElementById("borrowerContact").value.trim();
+        const loanDate = document.getElementById("loanDate").value;
+        const loanTime = document.getElementById("loanTime").value;
+
+        if (!borrowerName || !contact || !loanDate || !loanTime) {
+          borrowError.textContent = "Semua data peminjaman wajib diisi, ya.";
+          return;
+        }
+
+        const start = new Date(`${loanDate}T${loanTime}`);
+        const borrowedAt = Number.isNaN(start.getTime())
+          ? Date.now()
+          : start.getTime();
+        const loanId = `${pendingBookId}-${borrowedAt}`;
+        const book = getBooks().find((item) => item.id === pendingBookId);
+        const loan = {
+          loanId,
+          borrowerName,
+          contact,
+          loanDate,
+          loanTime,
+          borrowedAt,
+          dueAt: borrowedAt + LOAN_DAYS * 24 * 60 * 60 * 1000,
+        };
+        loans[pendingBookId] = loan;
+        loanHistory.push({
+          loanId,
+          bookId: pendingBookId,
+          bookTitle: book ? book.title : "Buku tidak ditemukan",
+          borrowerName,
+          contact,
+          loanDate,
+          loanTime,
+          borrowedAt,
+          status: "Sedang dipinjam",
+          returnedAt: null,
+        });
+        saveLoans(loans);
+        saveLoanHistory(loanHistory);
+        closeBorrowModal();
+        render();
+      };
+
+      render();
+    </script>
+  </body>
+</html>

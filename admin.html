@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin - Rak Ceria</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+      :root {
+        --ink: #1f2a37;
+        --muted: #64748b;
+        --line: #dbe5ee;
+        --paper: #ffffff;
+        --bg: #eef7fb;
+        --blue: #2879d8;
+        --green: #2d9a68;
+        --red: #d84d55;
+        --shadow: 0 10px 30px rgba(31, 42, 55, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #eaf7fb, #fff9e8);
+        color: var(--ink);
+        font-family: "Segoe UI", sans-serif;
+      }
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .login-wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .login-card,
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+      .login-card {
+        width: min(420px, 100%);
+        padding: 30px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+      }
+      h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 20px;
+        margin-bottom: 18px;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin: 0 0 24px;
+        line-height: 1.5;
+      }
+      label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        margin: 14px 0 6px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 11px 12px;
+        color: var(--ink);
+        background: #fbfdff;
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .btn {
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 16px;
+        font-weight: 800;
+      }
+      .btn-primary {
+        color: #fff;
+        background: var(--blue);
+      }
+      .btn-green {
+        color: #fff;
+        background: var(--green);
+      }
+      .btn-danger {
+        color: #fff;
+        background: var(--red);
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+      .link-button {
+        display: block;
+        margin: 14px auto 0;
+        padding: 0;
+        border: 0;
+        color: var(--blue);
+        background: transparent;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .btn-muted {
+        color: var(--ink);
+        background: #edf2f6;
+      }
+      .login-card .btn {
+        width: 100%;
+        margin-top: 20px;
+      }
+      .error {
+        min-height: 18px;
+        color: var(--red);
+        font-size: 13px;
+        font-weight: 700;
+        margin: 10px 0 0;
+      }
+      .app {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 28px 20px 56px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .topbar p {
+        color: var(--muted);
+        margin: 5px 0 0;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .stat {
+        padding: 18px;
+      }
+      .stat strong {
+        display: block;
+        font-size: 28px;
+        margin-top: 7px;
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 360px) 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      .panel {
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .book-list {
+        display: grid;
+        gap: 10px;
+      }
+      .book-row,
+      .loan-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .book-row strong,
+      .loan-row strong {
+        display: block;
+      }
+      .book-row small,
+      .loan-row small {
+        color: var(--muted);
+        display: block;
+        margin-top: 3px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+      }
+      th,
+      td {
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        padding: 11px 8px;
+        vertical-align: top;
+        font-size: 13px;
+      }
+      th {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .notice {
+        background: #fff8df;
+        border: 1px solid #f3d982;
+        border-radius: 10px;
+        padding: 12px;
+        color: #725a13;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 18px;
+      }
+      @media (max-width: 760px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .stats,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="login-wrap" id="loginView">
+      <form class="login-card" id="loginForm">
+        <h1>Login Admin</h1>
+        <p class="subtitle">
+          Panel pengelolaan Rak Ceria. Halaman ini tidak ditautkan dari website
+          publik.
+        </p>
+        <label for="username">Email admin</label>
+        <input id="username" type="email" autocomplete="username" required />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        />
+        <p class="error" id="loginError"></p>
+        <button class="btn btn-primary" type="submit">Masuk</button>
+        <button class="link-button" id="resetPasswordBtn" type="button">
+          Kirim tautan reset password
+        </button>
+      </form>
+    </section>
+
+    <main class="app hidden" id="adminView">
+      <header class="topbar">
+        <div>
+          <h1>Panel Admin Rak Ceria</h1>
+          <p>Kelola koleksi dan catat peminjaman.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-muted" id="logoutBtn" type="button">
+            Keluar
+          </button>
+        </div>
+      </header>
+      <div class="notice">
+        Data peminjam hanya bisa dilihat oleh akun admin.
+      </div>
+      <div class="notice hidden" id="adminError" role="alert"></div>
+
+      <section class="stats">
+        <div class="panel stat">
+          <span>Total buku</span><strong id="bookCount">0</strong>
+        </div>
+        <div class="panel stat">
+          <span>Sedang dipinjam</span><strong id="loanCount">0</strong>
+        </div>
+        <div class="panel stat">
+          <span>Total history</span><strong id="historyCount">0</strong>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Tambah Buku</h2>
+          <form id="bookForm">
+            <label for="title">Judul buku</label><input id="title" required />
+            <label for="author">Penulis</label><input id="author" required />
+            <label for="category">Kategori</label
+            ><input id="category" placeholder="mis. Dongeng" required />
+            <label for="age">Usia pembaca</label
+            ><input id="age" placeholder="mis. 5-8 th" required />
+            <label for="icon">Emoji sampul</label
+            ><input id="icon" value="📘" maxlength="4" />
+            <label for="blurb">Ringkasan</label><textarea id="blurb"></textarea>
+            <label for="cover">Gambar sampul</label
+            ><input id="cover" type="file" accept="image/*" />
+            <p class="error" id="bookError"></p>
+            <button class="btn btn-green" type="submit">Simpan Buku</button>
+          </form>
+        </section>
+
+        <div>
+          <section class="panel">
+            <h2>Daftar Buku</h2>
+            <div class="book-list" id="bookList"></div>
+          </section>
+          <section class="panel">
+            <h2>Catat Peminjaman</h2>
+            <form id="loanForm">
+              <label for="loanBook">Buku</label>
+              <select id="loanBook" required></select>
+              <label for="borrowerName">Nama peminjam</label>
+              <input id="borrowerName" required />
+              <label for="borrowerContact">Kontak</label>
+              <input id="borrowerContact" required />
+              <label for="loanDate">Tanggal pinjam</label>
+              <input id="loanDate" type="date" required />
+              <label for="loanTime">Waktu pinjam</label>
+              <input id="loanTime" type="time" required />
+              <p class="error" id="loanError"></p>
+              <button class="btn btn-primary" id="saveLoanBtn" type="submit">
+                Simpan Peminjaman
+              </button>
+            </form>
+          </section>
+          <section class="panel">
+            <h2>Sedang Dipinjam</h2>
+            <div class="book-list" id="loanList"></div>
+          </section>
+        </div>
+      </div>
+
+      <section class="panel">
+        <h2>History Peminjaman</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Buku</th>
+                <th>Peminjam</th>
+                <th>Kontak</th>
+                <th>Waktu</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyList"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const firebaseReady =
+        typeof firebase !== "undefined" &&
+        window.firebaseConfig &&
+        !window.firebaseConfig.apiKey.startsWith("ISI_") &&
+        !window.firebaseConfig.projectId.startsWith("ISI_") &&
+        Array.isArray(window.firebaseAdminUids);
+      const firebaseApp = firebaseReady
+        ? firebase.initializeApp(window.firebaseConfig)
+        : null;
+      const auth = firebaseApp ? firebase.auth() : null;
+      const db = firebaseApp ? firebase.firestore() : null;
+      const booksCollection = db ? db.collection("books") : null;
+      const loansCollection = db ? db.collection("loans") : null;
+      const COLORS = ["#ff6b5b", "#ffc94a", "#3fa875", "#3e8eed", "#9b5de5"];
+      const DEFAULT_BOOKS = [
+        {
+          id: "default-1",
+          title: "Petualangan Si Kancil",
+          author: "Ayu Lestari",
+          cat: "Dongeng",
+          age: "5-8 th",
+          color: "#ff6b5b",
+          icon: "🐇",
+          cover: "",
+          blurb: "Kisah kancil cerdik menghindari buaya dan harimau di hutan.",
+        },
+        {
+          id: "default-2",
+          title: "Menjelajah Tata Surya",
+          author: "Budi Santoso",
+          cat: "Sains",
+          age: "7-10 th",
+          color: "#3e8eed",
+          icon: "🪐",
+          cover: "Tata%20Surya.jpg",
+          blurb: "Kenali planet, bintang, dan rahasia luar angkasa.",
+        },
+        {
+          id: "default-3",
+          title: "Bebek Buruk Rupa",
+          author: "H.C. Andersen (adaptasi)",
+          cat: "Dongeng",
+          age: "4-7 th",
+          color: "#ffc94a",
+          icon: "🦆",
+          cover: "",
+          blurb: "Cerita klasik tentang menerima diri sendiri apa adanya.",
+        },
+        {
+          id: "default-4",
+          title: "Aku Bisa Berhitung!",
+          author: "Rina Dewi",
+          cat: "Belajar",
+          age: "4-6 th",
+          color: "#3fa875",
+          icon: "🔢",
+          cover: "Belajar%20Menghitung.jpg",
+          blurb: "Belajar angka 1-20 lewat gambar dan permainan seru.",
+        },
+        {
+          id: "default-5",
+          title: "Legenda Danau Toba",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "6-10 th",
+          color: "#9b5de5",
+          icon: "🏞️",
+          cover: "Danau%20Toba.jpg",
+          blurb: "Cerita rakyat asal Sumatera Utara yang penuh pesan moral.",
+        },
+        {
+          id: "default-6",
+          title: "Dinosaurus di Halaman Belakang",
+          author: "Fajar Nugroho",
+          cat: "Sains",
+          age: "6-9 th",
+          color: "#ff6b5b",
+          icon: "🦕",
+          cover: "",
+          blurb: "Fakta-fakta seru dunia dinosaurus untuk anak penasaran.",
+        },
+        {
+          id: "default-7",
+          title: "Si Kucing dan Sepatu Ajaib",
+          author: "Nadia Putri",
+          cat: "Fantasi",
+          age: "5-9 th",
+          color: "#3e8eed",
+          icon: "🐱",
+          cover: "",
+          blurb: "Kucing kecil menemukan sepatu yang bisa membawanya terbang.",
+        },
+        {
+          id: "default-8",
+          title: "Belajar Warna dan Bentuk",
+          author: "Rina Dewi",
+          cat: "Belajar",
+          age: "3-5 th",
+          color: "#ffc94a",
+          icon: "🔺",
+          cover: "Mewarnai.jpg",
+          blurb: "Pengenalan warna dan bentuk dasar untuk balita.",
+        },
+        {
+          id: "default-9",
+          title: "Malin Kundang",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "6-10 th",
+          color: "#3fa875",
+          icon: "⛵",
+          cover: "Malin%20Kundang.jpg",
+          blurb: "Legenda anak durhaka dari tanah Minangkabau.",
+        },
+        {
+          id: "default-10",
+          title: "Robot Kecil Penjaga Kota",
+          author: "Dimas Aditya",
+          cat: "Fantasi",
+          age: "7-10 th",
+          color: "#9b5de5",
+          icon: "🤖",
+          cover: "",
+          blurb: "Petualangan robot kecil yang melindungi kotanya dari bahaya.",
+        },
+        {
+          id: "default-11",
+          title: "Mengenal Hewan Laut",
+          author: "Budi Santoso",
+          cat: "Sains",
+          age: "5-9 th",
+          color: "#ff6b5b",
+          icon: "🐠",
+          cover: "",
+          blurb: "Jelajahi dunia bawah laut dan makhluk-makhluk uniknya.",
+        },
+        {
+          id: "default-12",
+          title: "Timun Mas",
+          author: "Tim Cerita Nusantara",
+          cat: "Nusantara",
+          age: "5-8 th",
+          color: "#ffc94a",
+          icon: "🎋",
+          cover: "Timun%20Mas.jpg",
+          blurb: "Kisah keberanian Timun Mas melawan raksasa jahat.",
+        },
+      ];
+      let books = [];
+      let loans = [];
+
+      const loginView = document.getElementById("loginView");
+      const adminView = document.getElementById("adminView");
+      const loginError = document.getElementById("loginError");
+      const adminError = document.getElementById("adminError");
+      const escapeHtml = (value) =>
+        String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      const formatDate = (value) =>
+        value ? new Date(value).toLocaleString("id-ID") : "-";
+
+      async function seedBooksIfEmpty() {
+        const snapshot = await booksCollection.limit(1).get();
+        if (!snapshot.empty) return;
+        const batch = db.batch();
+        DEFAULT_BOOKS.forEach((book) => {
+          const { id, ...data } = book;
+          batch.set(booksCollection.doc(id), { ...data, available: true });
+        });
+        await batch.commit();
+      }
+
+      async function loadData() {
+        const [bookSnapshot, loanSnapshot] = await Promise.all([
+          booksCollection.orderBy("title").get(),
+          loansCollection.orderBy("borrowedAt", "desc").get(),
+        ]);
+        books = bookSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        loans = loanSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (!auth) {
+            loginError.textContent =
+              "Isi konfigurasi Firebase terlebih dahulu.";
+            return;
+          }
+          const user = document.getElementById("username").value.trim();
+          const pass = document.getElementById("password").value;
+          auth.signInWithEmailAndPassword(user, pass).catch((error) => {
+            const messages = {
+              "auth/invalid-credential": "Email atau password Firebase salah.",
+              "auth/invalid-email": "Format email tidak valid.",
+              "auth/user-disabled": "Akun Firebase ini dinonaktifkan.",
+              "auth/too-many-requests":
+                "Terlalu banyak percobaan. Coba lagi nanti.",
+              "auth/unauthorized-domain":
+                "Domain ini belum ditambahkan di Firebase Authentication > Settings > Authorized domains.",
+              "auth/network-request-failed":
+                "Koneksi ke Firebase gagal. Periksa internet atau pemblokir jaringan.",
+            };
+            loginError.textContent =
+              messages[error.code] ||
+              `Login gagal (${error.code || "unknown"}).`;
+          });
+        });
+
+      document.getElementById("resetPasswordBtn").onclick = () => {
+        const email = document.getElementById("username").value.trim();
+        if (!email) {
+          loginError.textContent = "Masukkan email admin terlebih dahulu.";
+          return;
+        }
+        if (!auth) {
+          loginError.textContent = "Konfigurasi Firebase belum siap.";
+          return;
+        }
+        auth
+          .sendPasswordResetEmail(email)
+          .then(() => {
+            loginError.textContent =
+              "Jika email terdaftar, tautan reset password sudah dikirim.";
+          })
+          .catch((error) => {
+            loginError.textContent =
+              error.code === "auth/unauthorized-domain"
+                ? "Domain ini belum diizinkan di Firebase Authentication > Settings > Authorized domains."
+                : `Reset gagal (${error.code || "unknown"}).`;
+          });
+      };
+
+      document.getElementById("logoutBtn").onclick = () => {
+        if (auth) auth.signOut();
+      };
+
+      function verifyAdmin(user) {
+        if (!window.firebaseAdminUids.includes(user.uid)) {
+          return auth.signOut().then(() => {
+            loginError.textContent = "Akun ini bukan admin.";
+          });
+        }
+        showAdmin().catch((error) => {
+          console.error(error);
+          adminError.textContent = `Firestore gagal dimuat (${error.code || "unknown"}). Periksa Firestore Rules dan UID admin.`;
+          adminError.classList.remove("hidden");
+        });
+      }
+
+      document
+        .getElementById("bookForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const file = document.getElementById("cover").files[0];
+          const error = document.getElementById("bookError");
+          if (file && file.size > 400 * 1024) {
+            document.getElementById("bookError").textContent =
+              "Gambar maksimal 400 KB agar muat di Firestore.";
+            return;
+          }
+          try {
+            const cover = file ? await readFile(file) : "";
+            await booksCollection.add({
+              title: document.getElementById("title").value.trim(),
+              author: document.getElementById("author").value.trim(),
+              cat: document.getElementById("category").value.trim(),
+              age: document.getElementById("age").value.trim(),
+              icon: document.getElementById("icon").value.trim() || "📘",
+              cover,
+              blurb:
+                document.getElementById("blurb").value.trim() ||
+                "Buku baru di rak Rak Ceria.",
+              color: COLORS[books.length % COLORS.length],
+              available: true,
+            });
+            event.target.reset();
+            document.getElementById("icon").value = "📘";
+            error.textContent = "Buku berhasil ditambahkan.";
+            await refresh();
+          } catch (saveError) {
+            console.error(saveError);
+            error.textContent = "Buku gagal disimpan ke Firestore.";
+          }
+        });
+
+      document
+        .getElementById("loanForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const error = document.getElementById("loanError");
+          const bookId = document.getElementById("loanBook").value;
+          const book = books.find((item) => item.id === bookId);
+          if (!book) {
+            error.textContent = "Pilih buku yang tersedia.";
+            return;
+          }
+          const loanDate = document.getElementById("loanDate").value;
+          const loanTime = document.getElementById("loanTime").value;
+          const borrowedAt = new Date(`${loanDate}T${loanTime}`).getTime();
+          const bookRef = booksCollection.doc(bookId);
+          const loanRef = loansCollection.doc();
+          const button = document.getElementById("saveLoanBtn");
+          button.disabled = true;
+          try {
+            await db.runTransaction(async (transaction) => {
+              const bookSnapshot = await transaction.get(bookRef);
+              if (
+                !bookSnapshot.exists ||
+                bookSnapshot.data().available === false
+              ) {
+                throw new Error("Buku sudah dipinjam atau tidak tersedia.");
+              }
+              transaction.update(bookRef, { available: false });
+              transaction.set(loanRef, {
+                bookId,
+                bookTitle: book.title,
+                borrowerName: document
+                  .getElementById("borrowerName")
+                  .value.trim(),
+                contact: document
+                  .getElementById("borrowerContact")
+                  .value.trim(),
+                loanDate,
+                loanTime,
+                borrowedAt,
+                dueAt: borrowedAt + 7 * 24 * 60 * 60 * 1000,
+                status: "active",
+                returnedAt: null,
+              });
+            });
+            event.target.reset();
+            error.textContent = "Peminjaman berhasil dicatat.";
+            setDefaultLoanDateTime();
+            await refresh();
+          } catch (saveError) {
+            console.error(saveError);
+            error.textContent =
+              saveError.message || "Peminjaman gagal disimpan.";
+          } finally {
+            button.disabled = false;
+          }
+        });
+
+      function readFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function deleteBook(id) {
+        const book = books.find((item) => item.id === id);
+        if (!book || book.available === false) {
+          alert("Buku yang sedang dipinjam tidak bisa dihapus.");
+          return;
+        }
+        await booksCollection.doc(id).delete();
+        await refresh();
+      }
+
+      async function returnLoan(id) {
+        const loanRef = loansCollection.doc(id);
+        await db.runTransaction(async (transaction) => {
+          const loanSnapshot = await transaction.get(loanRef);
+          if (!loanSnapshot.exists || loanSnapshot.data().status !== "active") {
+            throw new Error("Peminjaman ini sudah dikembalikan.");
+          }
+          const loan = loanSnapshot.data();
+          const bookRef = booksCollection.doc(loan.bookId);
+          const bookSnapshot = await transaction.get(bookRef);
+          transaction.update(loanRef, {
+            status: "returned",
+            returnedAt: Date.now(),
+          });
+          if (bookSnapshot.exists)
+            transaction.update(bookRef, { available: true });
+        });
+        await refresh();
+      }
+
+      async function refresh() {
+        await loadData();
+        render();
+      }
+
+      function render() {
+        const activeLoans = loans.filter((loan) => loan.status === "active");
+        document.getElementById("bookCount").textContent = books.length;
+        document.getElementById("loanCount").textContent = activeLoans.length;
+        document.getElementById("historyCount").textContent = loans.length;
+        document.getElementById("bookList").innerHTML = books.length
+          ? books
+              .map(
+                (book) =>
+                  `<div class="book-row"><div><strong>${escapeHtml(book.icon || "📘")} ${escapeHtml(book.title)}</strong><small>${escapeHtml(book.author)} · ${escapeHtml(book.cat)} · ${book.available === false ? "Sedang dipinjam" : "Tersedia"}</small></div><button class="btn btn-danger" data-delete="${escapeHtml(book.id)}" type="button" ${book.available === false ? "disabled" : ""}>Hapus</button></div>`,
+              )
+              .join("")
+          : "<p>Belum ada buku.</p>";
+        const availableBooks = books.filter((book) => book.available !== false);
+        document.getElementById("loanBook").innerHTML = availableBooks.length
+          ? availableBooks
+              .map(
+                (book) =>
+                  `<option value="${escapeHtml(book.id)}">${escapeHtml(book.title)}</option>`,
+              )
+              .join("")
+          : '<option value="">Tidak ada buku tersedia</option>';
+        document.getElementById("saveLoanBtn").disabled =
+          !availableBooks.length;
+        document.querySelectorAll("[data-delete]").forEach(
+          (button) =>
+            (button.onclick = async () => {
+              if (!confirm("Hapus buku ini?")) return;
+              try {
+                await deleteBook(button.dataset.delete);
+              } catch (error) {
+                console.error(error);
+                alert("Buku gagal dihapus dari Firestore.");
+              }
+            }),
+        );
+        document.getElementById("loanList").innerHTML = activeLoans.length
+          ? activeLoans
+              .map(
+                (loan) =>
+                  `<div class="loan-row"><div><strong>${escapeHtml(loan.bookTitle)}</strong><small>${escapeHtml(loan.borrowerName)} · ${escapeHtml(loan.contact)}</small><small>Pinjam: ${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)} · Kembali sebelum: ${formatDate(loan.dueAt)}</small></div><button class="btn btn-green" data-return="${escapeHtml(loan.id)}" type="button">Tandai Kembali</button></div>`,
+              )
+              .join("")
+          : "<p>Tidak ada buku yang sedang dipinjam.</p>";
+        document.querySelectorAll("[data-return]").forEach(
+          (button) =>
+            (button.onclick = async () => {
+              try {
+                await returnLoan(button.dataset.return);
+              } catch (error) {
+                console.error(error);
+                alert(error.message || "Status pengembalian gagal disimpan.");
+              }
+            }),
+        );
+        document.getElementById("historyList").innerHTML = loans.length
+          ? loans
+              .map(
+                (loan) =>
+                  `<tr><td>${escapeHtml(loan.bookTitle)}</td><td>${escapeHtml(loan.borrowerName)}</td><td>${escapeHtml(loan.contact)}</td><td>${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)}</td><td>${loan.status === "active" ? "Sedang dipinjam" : `Dikembalikan · ${formatDate(loan.returnedAt)}`}</td></tr>`,
+              )
+              .join("")
+          : '<tr><td colspan="5">Belum ada history peminjaman.</td></tr>';
+      }
+
+      function setDefaultLoanDateTime() {
+        const now = new Date();
+        const localDate = new Date(
+          now.getTime() - now.getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .slice(0, 10);
+        document.getElementById("loanDate").value = localDate;
+        document.getElementById("loanTime").value = now
+          .toTimeString()
+          .slice(0, 5);
+      }
+
+      async function showAdmin() {
+        loginView.classList.add("hidden");
+        adminView.classList.remove("hidden");
+        adminError.classList.add("hidden");
+        await seedBooksIfEmpty();
+        await refresh();
+        setDefaultLoanDateTime();
+      }
+
+      if (auth) {
+        auth.onAuthStateChanged((user) => {
+          if (user) verifyAdmin(user);
+          else {
+            adminView.classList.add("hidden");
+            loginView.classList.remove("hidden");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
