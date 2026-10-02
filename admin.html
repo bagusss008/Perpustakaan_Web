@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin - Rak Ceria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -244,14 +250,363 @@
         line-height: 1.5;
         margin-bottom: 18px;
       }
+      .ktp-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(15, 23, 42, 0.72);
+      }
+      .ktp-modal-content {
+        width: min(720px, 100%);
+        max-height: 100%;
+        overflow: auto;
+        padding: 16px;
+        background: var(--paper);
+        border-radius: 12px;
+      }
+      .ktp-modal-content img {
+        display: block;
+        max-width: 100%;
+        max-height: 75vh;
+        margin: 16px auto 0;
+      }
+      :root {
+        --ink: #183330;
+        --muted: #687c78;
+        --line: #dce8e3;
+        --paper: #ffffff;
+        --bg: #f3f7f4;
+        --blue: #267a70;
+        --green: #447c58;
+        --red: #c9534e;
+        --shadow: 0 12px 34px rgba(28, 61, 54, 0.07);
+      }
+      body {
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(rgba(38, 122, 112, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(38, 122, 112, 0.035) 1px, transparent 1px);
+        background-size: 28px 28px;
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Manrope", sans-serif;
+      }
+      h1 {
+        font-size: 30px;
+        font-weight: 800;
+      }
+      h2 {
+        font-size: 18px;
+        font-weight: 800;
+      }
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+      .app {
+        width: min(1320px, 100%);
+        padding: 0 28px 56px;
+      }
+      .topbar {
+        position: relative;
+        min-height: 170px;
+        align-items: center;
+        margin-bottom: 24px;
+        color: #fff;
+      }
+      .topbar::before {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 50%;
+        width: calc(100% + 56px);
+        height: 100%;
+        content: "";
+        transform: translateX(-50%);
+        border-bottom: 4px solid #e7aa54;
+        background: #183d39;
+      }
+      .topbar h1 {
+        margin-bottom: 5px;
+        color: #fff;
+      }
+      .topbar p {
+        color: #c3d8d2;
+        font-size: 14px;
+      }
+      .eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #75c2aa;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .login-wrap {
+        background-image:
+          linear-gradient(rgba(38, 122, 112, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(38, 122, 112, 0.04) 1px, transparent 1px);
+        background-size: 28px 28px;
+      }
+      .login-card,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .login-card {
+        border-top: 4px solid var(--blue);
+      }
+      .login-card h1 {
+        font-size: 26px;
+      }
+      label {
+        color: #3f5b56;
+        font-size: 12px;
+      }
+      input,
+      textarea,
+      select {
+        border: 1px solid #d4e2dc;
+        border-radius: 8px;
+        background: #fbfdfc;
+        transition:
+          border-color 0.16s ease,
+          box-shadow 0.16s ease,
+          background 0.16s ease;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #4b9b8d;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(38, 122, 112, 0.13);
+      }
+      input[type="file"] {
+        padding: 8px;
+        font-size: 12px;
+      }
+      .btn {
+        border-radius: 8px;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          background-color 0.15s ease;
+      }
+      .btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(24, 51, 48, 0.12);
+      }
+      .btn:focus-visible,
+      .link-button:focus-visible {
+        outline: 3px solid rgba(231, 170, 84, 0.75);
+        outline-offset: 2px;
+      }
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+      .btn-primary {
+        background: #267a70;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: #1d625a;
+      }
+      .btn-green {
+        background: #447c58;
+      }
+      .btn-danger {
+        background: #c9534e;
+      }
+      .btn-muted {
+        background: #eaf1ed;
+      }
+      .link-button {
+        color: var(--blue);
+      }
+      .stats {
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .stat {
+        position: relative;
+        overflow: hidden;
+        min-height: 112px;
+        padding: 20px 22px;
+        border-top: 3px solid var(--stat-accent, #267a70);
+      }
+      .stat:nth-child(2) {
+        --stat-accent: #df8b52;
+      }
+      .stat:nth-child(3) {
+        --stat-accent: #6685c0;
+      }
+      .stat strong {
+        margin-top: 8px;
+        color: var(--stat-accent, #267a70);
+        font-family: "Manrope", sans-serif;
+        font-size: 32px;
+        line-height: 1;
+      }
+      .stat span {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .grid {
+        grid-template-columns: minmax(290px, 0.82fr) minmax(0, 1.5fr);
+        gap: 20px;
+      }
+      .panel {
+        padding: 22px;
+        margin-bottom: 20px;
+      }
+      .panel h2 {
+        padding-bottom: 13px;
+        border-bottom: 1px solid #e7efeb;
+      }
+      .book-row,
+      .loan-row {
+        border-color: #e0eae5;
+        border-radius: 9px;
+        background: #fcfefd;
+        transition:
+          border-color 0.16s ease,
+          transform 0.16s ease;
+      }
+      .book-row:hover,
+      .loan-row:hover {
+        transform: translateY(-1px);
+        border-color: #b6d4ca;
+      }
+      .book-row strong,
+      .loan-row strong {
+        color: #24433e;
+        font-size: 14px;
+      }
+      .book-row small,
+      .loan-row small {
+        line-height: 1.5;
+      }
+      .notice {
+        border: 1px solid #c9e3d7;
+        border-left: 4px solid #4c9a76;
+        border-radius: 8px;
+        background: #edf7f1;
+        color: #315d4a;
+      }
+      .notice[role="alert"] {
+        border-color: #efcfca;
+        border-left-color: var(--red);
+        background: #fff4f2;
+        color: #8e3632;
+      }
+      .error {
+        color: #b84440;
+      }
+      .table-wrap {
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      table {
+        min-width: 820px;
+      }
+      th {
+        background: #f3f8f5;
+        color: #55706a;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      td {
+        color: #35504b;
+      }
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      tbody tr:hover {
+        background: #f8fbf9;
+      }
+      .ktp-modal {
+        background: rgba(13, 35, 32, 0.78);
+        backdrop-filter: blur(4px);
+      }
+      .ktp-modal-content {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+      }
       @media (max-width: 760px) {
+        .app {
+          padding: 0 16px 40px;
+        }
         .topbar {
+          min-height: 150px;
           align-items: flex-start;
           flex-direction: column;
+          justify-content: center;
+          gap: 14px;
+          padding: 24px 0;
+        }
+        .topbar::before {
+          width: calc(100% + 32px);
+        }
+        .topbar .actions {
+          width: 100%;
+        }
+        .topbar .btn {
+          padding: 9px 14px;
+          color: var(--ink);
+          background: #fff;
         }
         .stats,
         .grid {
           grid-template-columns: 1fr;
+        }
+        .stats {
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .stat {
+          min-height: 96px;
+          padding: 16px 18px;
+        }
+        .panel {
+          padding: 18px;
+          margin-bottom: 14px;
+        }
+        .loan-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .loan-row .actions {
+          width: 100%;
+        }
+        .loan-row .actions .btn {
+          flex: 1;
+        }
+      }
+      @media (max-width: 420px) {
+        .login-wrap {
+          padding: 16px;
+        }
+        .login-card {
+          padding: 24px 20px;
+        }
+        .topbar h1 {
+          font-size: 26px;
+        }
+        .loan-row .actions {
+          align-items: stretch;
+          flex-direction: column;
         }
       }
     </style>
@@ -259,6 +614,7 @@
   <body>
     <section class="login-wrap" id="loginView">
       <form class="login-card" id="loginForm">
+        <span class="eyebrow">Rak Ceria · Area Terbatas</span>
         <h1>Login Admin</h1>
         <p class="subtitle">
           Panel pengelolaan Rak Ceria. Halaman ini tidak ditautkan dari website
@@ -284,6 +640,7 @@
     <main class="app hidden" id="adminView">
       <header class="topbar">
         <div>
+          <span class="eyebrow">Rak Ceria / Workspace</span>
           <h1>Panel Admin Rak Ceria</h1>
           <p>Kelola koleksi dan catat peminjaman.</p>
         </div>
@@ -294,7 +651,7 @@
         </div>
       </header>
       <div class="notice">
-        Data peminjam hanya bisa dilihat oleh akun admin.
+        Data peminjam dan foto KTP hanya bisa dilihat oleh akun admin.
       </div>
       <div class="notice hidden" id="adminError" role="alert"></div>
 
@@ -344,6 +701,20 @@
               <input id="borrowerName" required />
               <label for="borrowerContact">Kontak</label>
               <input id="borrowerContact" required />
+              <label for="borrowerEmail">Email</label>
+              <input
+                id="borrowerEmail"
+                type="email"
+                autocomplete="email"
+                required
+              />
+              <label for="borrowerKtp">Foto KTP (maks. 400 KB)</label>
+              <input
+                id="borrowerKtp"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                required
+              />
               <label for="loanDate">Tanggal pinjam</label>
               <input id="loanDate" type="date" required />
               <label for="loanTime">Waktu pinjam</label>
@@ -370,6 +741,8 @@
                 <th>Buku</th>
                 <th>Peminjam</th>
                 <th>Kontak</th>
+                <th>Email</th>
+                <th>Foto KTP</th>
                 <th>Waktu</th>
                 <th>Status</th>
               </tr>
@@ -379,6 +752,22 @@
         </div>
       </section>
     </main>
+
+    <div
+      class="ktp-modal hidden"
+      id="ktpModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ktpModalTitle"
+    >
+      <div class="ktp-modal-content">
+        <button class="btn btn-muted" id="closeKtpModal" type="button">
+          Tutup
+        </button>
+        <h2 id="ktpModalTitle">Foto KTP</h2>
+        <img id="ktpPreview" alt="Foto KTP peminjam" />
+      </div>
+    </div>
 
     <script>
       const firebaseReady =
@@ -679,8 +1068,20 @@
           const error = document.getElementById("loanError");
           const bookId = document.getElementById("loanBook").value;
           const book = books.find((item) => item.id === bookId);
+          const ktpFile = document.getElementById("borrowerKtp").files[0];
           if (!book) {
             error.textContent = "Pilih buku yang tersedia.";
+            return;
+          }
+          if (
+            !ktpFile ||
+            !["image/jpeg", "image/png", "image/webp"].includes(ktpFile.type)
+          ) {
+            error.textContent = "Pilih file foto KTP yang valid.";
+            return;
+          }
+          if (ktpFile.size > 400 * 1024) {
+            error.textContent = "Foto KTP maksimal 400 KB.";
             return;
           }
           const loanDate = document.getElementById("loanDate").value;
@@ -691,6 +1092,7 @@
           const button = document.getElementById("saveLoanBtn");
           button.disabled = true;
           try {
+            const ktpPhoto = await readFile(ktpFile);
             await db.runTransaction(async (transaction) => {
               const bookSnapshot = await transaction.get(bookRef);
               if (
@@ -709,6 +1111,8 @@
                 contact: document
                   .getElementById("borrowerContact")
                   .value.trim(),
+                email: document.getElementById("borrowerEmail").value.trim(),
+                ktpPhoto,
                 loanDate,
                 loanTime,
                 borrowedAt,
@@ -814,7 +1218,7 @@
           ? activeLoans
               .map(
                 (loan) =>
-                  `<div class="loan-row"><div><strong>${escapeHtml(loan.bookTitle)}</strong><small>${escapeHtml(loan.borrowerName)} · ${escapeHtml(loan.contact)}</small><small>Pinjam: ${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)} · Kembali sebelum: ${formatDate(loan.dueAt)}</small></div><button class="btn btn-green" data-return="${escapeHtml(loan.id)}" type="button">Tandai Kembali</button></div>`,
+                  `<div class="loan-row"><div><strong>${escapeHtml(loan.bookTitle)}</strong><small>${escapeHtml(loan.borrowerName)} · ${escapeHtml(loan.contact)} · ${escapeHtml(loan.email || "")}</small><small>Pinjam: ${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)} · Kembali sebelum: ${formatDate(loan.dueAt)}</small></div><div class="actions">${loan.ktpPhoto ? `<button class="btn btn-muted" data-ktp="${escapeHtml(loan.id)}" type="button">Lihat KTP</button>` : ""}<button class="btn btn-green" data-return="${escapeHtml(loan.id)}" type="button">Tandai Kembali</button></div></div>`,
               )
               .join("")
           : "<p>Tidak ada buku yang sedang dipinjam.</p>";
@@ -833,11 +1237,25 @@
           ? loans
               .map(
                 (loan) =>
-                  `<tr><td>${escapeHtml(loan.bookTitle)}</td><td>${escapeHtml(loan.borrowerName)}</td><td>${escapeHtml(loan.contact)}</td><td>${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)}</td><td>${loan.status === "active" ? "Sedang dipinjam" : `Dikembalikan · ${formatDate(loan.returnedAt)}`}</td></tr>`,
+                  `<tr><td>${escapeHtml(loan.bookTitle)}</td><td>${escapeHtml(loan.borrowerName)}</td><td>${escapeHtml(loan.contact)}</td><td>${escapeHtml(loan.email || "-")}</td><td>${loan.ktpPhoto ? `<button class="btn btn-muted" data-ktp="${escapeHtml(loan.id)}" type="button">Lihat KTP</button>` : "-"}</td><td>${escapeHtml(loan.loanDate)} ${escapeHtml(loan.loanTime)}</td><td>${loan.status === "active" ? "Sedang dipinjam" : `Dikembalikan · ${formatDate(loan.returnedAt)}`}</td></tr>`,
               )
               .join("")
-          : '<tr><td colspan="5">Belum ada history peminjaman.</td></tr>';
+          : '<tr><td colspan="7">Belum ada history peminjaman.</td></tr>';
+        document.querySelectorAll("[data-ktp]").forEach(
+          (button) =>
+            (button.onclick = () => {
+              const loan = loans.find((item) => item.id === button.dataset.ktp);
+              if (!loan?.ktpPhoto) return;
+              document.getElementById("ktpPreview").src = loan.ktpPhoto;
+              document.getElementById("ktpModal").classList.remove("hidden");
+            }),
+        );
       }
+
+      document.getElementById("closeKtpModal").onclick = () => {
+        document.getElementById("ktpPreview").removeAttribute("src");
+        document.getElementById("ktpModal").classList.add("hidden");
+      };
 
       function setDefaultLoanDateTime() {
         const now = new Date();
