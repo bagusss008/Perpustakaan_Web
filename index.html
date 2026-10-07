@@ -8,6 +8,7 @@
     />
     <title>Rak Ceria — Perpustakaan Anak</title>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
     <script src="firebase-config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -207,6 +208,18 @@
 
       section.shelf-section {
         margin-bottom: 30px;
+      }
+      .catalog-notice {
+        margin: 0 0 14px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: #805b16;
+        background: rgba(255, 201, 74, 0.2);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .catalog-notice:empty {
+        display: none;
       }
       .shelf-title {
         font-size: 20px;
@@ -806,6 +819,9 @@
 
       <section class="shelf-section">
         <div class="shelf-title" id="shelfTitle">🪄 Semua Buku</div>
+        <p class="catalog-notice" id="catalogNotice" role="status">
+          Memuat daftar buku...
+        </p>
         <div class="grid" id="bookGrid"></div>
         <div class="empty-state" id="emptyState" style="display: none">
           <div>🙈</div>
@@ -821,6 +837,7 @@
 
     <script>
       const firebaseApp = firebase.initializeApp(window.firebaseConfig);
+      const db = firebaseApp.firestore();
       const emailOtpFunctions = firebaseApp.functions("asia-southeast1");
 
       const DEFAULT_BOOKS = [
@@ -957,6 +974,8 @@
       const HISTORY_KEY = "rakceria_loan_history_v1";
       const CUSTOM_BOOKS_KEY = "rakceria_custom_books_v1";
       const REMOVED_IDS_KEY = "rakceria_removed_ids_v1";
+      let catalogBooks = [];
+      let catalogBooksLoaded = false;
 
       let state = { search: "", category: "Semua" };
 
@@ -993,9 +1012,24 @@
       let removedIds = loadRemovedIds();
 
       function getBooks() {
-        return [...DEFAULT_BOOKS, ...customBooks].filter(
-          (b) => !removedIds.includes(b.id),
-        );
+        return catalogBooksLoaded ? catalogBooks : [];
+      }
+
+      async function loadCatalogBooks() {
+        try {
+          const snapshot = await db.collection("books").orderBy("title").get();
+          catalogBooks = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          catalogBooksLoaded = true;
+          document.getElementById("catalogNotice").textContent = "";
+          render();
+        } catch (error) {
+          console.error("Gagal memuat katalog buku dari Firestore", error);
+          document.getElementById("catalogNotice").textContent =
+            "Daftar buku terbaru belum bisa dimuat. Periksa koneksi dan aturan Firestore.";
+        }
       }
 
       function loadLoans() {
@@ -1102,8 +1136,7 @@
         }
         emptyEl.style.display = "none";
         ids.forEach((idStr) => {
-          const id = Number(idStr);
-          const book = getBooks().find((b) => b.id === id);
+          const book = getBooks().find((item) => String(item.id) === idStr);
           if (!book) return;
           const loan = normalizeLoan(loans[idStr]);
           const row = document.createElement("div");
@@ -1153,8 +1186,8 @@
             state.category === "Semua" || b.cat === state.category;
           const matchQ =
             !q ||
-            b.title.toLowerCase().includes(q) ||
-            b.author.toLowerCase().includes(q);
+            String(b.title || "").toLowerCase().includes(q) ||
+            String(b.author || "").toLowerCase().includes(q);
           return matchCat && matchQ;
         });
 
@@ -1170,17 +1203,28 @@
         empty.style.display = "none";
 
         filtered.forEach((book) => {
-          const isBorrowed = !!loans[book.id];
+          const isBorrowed =
+            !!loans[book.id] || book.available === false;
+          const color =
+            typeof book.color === "string" &&
+            (/^#[0-9a-f]{3,8}$/i.test(book.color) ||
+              /^var\(--(coral|sky|sun|leaf|berry)\)$/.test(book.color))
+              ? book.color
+              : "var(--sky)";
+          const cover = String(book.cover || "");
+          const coverMarkup = cover
+            ? `<img src="${escapeHtml(cover)}" alt="Sampul ${escapeHtml(book.title)}">`
+            : escapeHtml(book.icon || "📘");
           const card = document.createElement("div");
           card.className = "book";
           card.innerHTML = `
-      <div class="book-cover" style="background:${book.color};">${book.cover ? `<img src="${book.cover}" alt="Sampul ${book.title}">` : book.icon}</div>
+      <div class="book-cover" style="background:${color};">${coverMarkup}</div>
       <div class="book-body">
-        <div class="book-title">${book.title}</div>
-        <div class="book-author">oleh ${book.author}</div>
-        <div class="book-age">${book.age}</div>
-        <div class="book-blurb">${book.blurb}</div>
-        <button class="borrow-btn ${isBorrowed ? "borrowed" : "available"}" data-id="${book.id}" ${isBorrowed ? "disabled" : ""}>
+        <div class="book-title">${escapeHtml(book.title || "Buku tanpa judul")}</div>
+        <div class="book-author">oleh ${escapeHtml(book.author || "Penulis tidak diketahui")}</div>
+        <div class="book-age">${escapeHtml(book.age || "Usia bebas")}</div>
+        <div class="book-blurb">${escapeHtml(book.blurb || "Belum ada ringkasan.")}</div>
+        <button class="borrow-btn ${isBorrowed ? "borrowed" : "available"}" data-id="${escapeHtml(book.id)}" ${isBorrowed ? "disabled" : ""}>
           ${isBorrowed ? "Sedang Dipinjam" : "Pinjam Buku Ini"}
         </button>
       </div>
@@ -1190,13 +1234,13 @@
 
         grid.querySelectorAll(".borrow-btn.available").forEach((btn) => {
           btn.onclick = () => {
-            openBorrowModal(Number(btn.dataset.id));
+            openBorrowModal(btn.dataset.id);
           };
         });
       }
 
       function renderBadge() {
-        const total = getBooks().length;
+        const total = getBooks().filter((book) => book.available !== false).length;
         const dipinjam = Object.keys(loans).length;
         document.getElementById("stockBadge").textContent =
           `${total} judul tersedia · ${dipinjam} sedang kamu pinjam`;
@@ -1322,7 +1366,9 @@
       }
 
       function openBorrowModal(bookId) {
-        const book = getBooks().find((item) => item.id === bookId);
+        const book = getBooks().find(
+          (item) => String(item.id) === String(bookId),
+        );
         if (!book) return;
         pendingBookId = bookId;
         document.getElementById("borrowBookLabel").textContent =
@@ -1413,6 +1459,7 @@
       };
 
       render();
+      loadCatalogBooks();
     </script>
   </body>
 </html>
