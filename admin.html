@@ -13,6 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
     <script src="firebase-config.js"></script>
     <style>
       :root {
@@ -146,6 +147,24 @@
         font-size: 13px;
         font-weight: 700;
         margin: 10px 0 0;
+      }
+      .otp-actions {
+        display: flex;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .otp-actions .btn {
+        flex: 1;
+      }
+      .otp-status {
+        min-height: 18px;
+        margin: 8px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .otp-status.success {
+        color: var(--green);
+        font-weight: 700;
       }
       .app {
         width: min(1180px, 100%);
@@ -708,6 +727,36 @@
                 autocomplete="email"
                 required
               />
+              <label for="borrowerEmailOtp">Kode verifikasi email</label>
+              <input
+                id="borrowerEmailOtp"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                placeholder="Masukkan kode 6 digit dari email"
+              />
+              <div class="otp-actions">
+                <button
+                  class="btn btn-muted"
+                  id="sendBorrowerOtpBtn"
+                  type="button"
+                >
+                  Kirim kode OTP
+                </button>
+                <button
+                  class="btn btn-muted"
+                  id="verifyBorrowerOtpBtn"
+                  type="button"
+                >
+                  Verifikasi email
+                </button>
+              </div>
+              <p
+                class="otp-status"
+                id="borrowerOtpStatus"
+                aria-live="polite"
+              ></p>
               <label for="borrowerKtp">Foto KTP (maks. 400 KB)</label>
               <input
                 id="borrowerKtp"
@@ -781,6 +830,9 @@
         : null;
       const auth = firebaseApp ? firebase.auth() : null;
       const db = firebaseApp ? firebase.firestore() : null;
+      const emailOtpFunctions = firebaseApp
+        ? firebaseApp.functions("asia-southeast1")
+        : null;
       const booksCollection = db ? db.collection("books") : null;
       const loansCollection = db ? db.collection("loans") : null;
       const COLORS = ["#ff6b5b", "#ffc94a", "#3fa875", "#3e8eed", "#9b5de5"];
@@ -1061,6 +1113,110 @@
           }
         });
 
+      let verifiedBorrowerEmail = "";
+      let borrowerEmailVerifiedAt = null;
+      const borrowerEmailInput = document.getElementById("borrowerEmail");
+      const borrowerOtpInput = document.getElementById("borrowerEmailOtp");
+      const borrowerOtpStatus = document.getElementById("borrowerOtpStatus");
+
+      borrowerEmailInput.addEventListener("input", () => {
+        if (
+          borrowerEmailInput.value.trim().toLowerCase() !==
+          verifiedBorrowerEmail
+        ) {
+          verifiedBorrowerEmail = "";
+          borrowerEmailVerifiedAt = null;
+          borrowerOtpInput.value = "";
+          borrowerOtpStatus.textContent = "";
+          borrowerOtpStatus.classList.remove("success");
+        }
+      });
+
+      borrowerOtpInput.addEventListener("input", () => {
+        borrowerOtpInput.value = borrowerOtpInput.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+      });
+
+      document
+        .getElementById("sendBorrowerOtpBtn")
+        .addEventListener("click", async () => {
+          const email = borrowerEmailInput.value.trim().toLowerCase();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            borrowerOtpStatus.textContent = "Masukkan alamat email yang valid.";
+            borrowerOtpStatus.classList.remove("success");
+            return;
+          }
+          if (!emailOtpFunctions) {
+            borrowerOtpStatus.textContent =
+              "Layanan OTP belum tersedia. Cloud Functions belum dikonfigurasi.";
+            borrowerOtpStatus.classList.remove("success");
+            return;
+          }
+
+          const button = document.getElementById("sendBorrowerOtpBtn");
+          button.disabled = true;
+          borrowerOtpStatus.textContent = "Mengirim kode OTP...";
+          borrowerOtpStatus.classList.remove("success");
+          verifiedBorrowerEmail = "";
+          borrowerEmailVerifiedAt = null;
+          try {
+            await emailOtpFunctions
+              .httpsCallable("sendBorrowerEmailOtp")({ email });
+            borrowerOtpStatus.textContent =
+              "Kode OTP dikirim. Periksa inbox atau folder spam.";
+          } catch (otpError) {
+            console.error(otpError);
+            borrowerOtpStatus.textContent =
+              otpError.message || "Kode OTP gagal dikirim. Coba lagi nanti.";
+          } finally {
+            button.disabled = false;
+          }
+        });
+
+      document
+        .getElementById("verifyBorrowerOtpBtn")
+        .addEventListener("click", async () => {
+          const email = borrowerEmailInput.value.trim().toLowerCase();
+          const code = borrowerOtpInput.value.trim();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            borrowerOtpStatus.textContent = "Masukkan alamat email yang valid.";
+            borrowerOtpStatus.classList.remove("success");
+            return;
+          }
+          if (!/^\d{6}$/.test(code)) {
+            borrowerOtpStatus.textContent = "Masukkan kode OTP 6 digit.";
+            borrowerOtpStatus.classList.remove("success");
+            return;
+          }
+          if (!emailOtpFunctions) {
+            borrowerOtpStatus.textContent =
+              "Layanan OTP belum tersedia. Cloud Functions belum dikonfigurasi.";
+            borrowerOtpStatus.classList.remove("success");
+            return;
+          }
+
+          const button = document.getElementById("verifyBorrowerOtpBtn");
+          button.disabled = true;
+          borrowerOtpStatus.textContent = "Memverifikasi kode...";
+          borrowerOtpStatus.classList.remove("success");
+          try {
+            const result = await emailOtpFunctions
+              .httpsCallable("verifyBorrowerEmailOtp")({ email, code });
+            verifiedBorrowerEmail = email;
+            borrowerEmailVerifiedAt = result.data.verifiedAt;
+            borrowerOtpStatus.textContent = "Email berhasil diverifikasi.";
+            borrowerOtpStatus.classList.add("success");
+          } catch (otpError) {
+            console.error(otpError);
+            borrowerOtpStatus.textContent =
+              otpError.message ||
+              "Kode OTP tidak valid atau sudah kedaluwarsa.";
+          } finally {
+            button.disabled = false;
+          }
+        });
+
       document
         .getElementById("loanForm")
         .addEventListener("submit", async (event) => {
@@ -1069,6 +1225,17 @@
           const bookId = document.getElementById("loanBook").value;
           const book = books.find((item) => item.id === bookId);
           const ktpFile = document.getElementById("borrowerKtp").files[0];
+          const email = borrowerEmailInput.value.trim().toLowerCase();
+          if (
+            !verifiedBorrowerEmail ||
+            email !== verifiedBorrowerEmail ||
+            !borrowerEmailVerifiedAt ||
+            Date.now() - borrowerEmailVerifiedAt > 10 * 60 * 1000
+          ) {
+            error.textContent =
+              "Verifikasi email peminjam dengan kode OTP sebelum menyimpan.";
+            return;
+          }
           if (!book) {
             error.textContent = "Pilih buku yang tersedia.";
             return;
@@ -1111,7 +1278,9 @@
                 contact: document
                   .getElementById("borrowerContact")
                   .value.trim(),
-                email: document.getElementById("borrowerEmail").value.trim(),
+                email,
+                emailVerified: true,
+                emailVerifiedAt: borrowerEmailVerifiedAt,
                 ktpPhoto,
                 loanDate,
                 loanTime,
@@ -1122,6 +1291,10 @@
               });
             });
             event.target.reset();
+            verifiedBorrowerEmail = "";
+            borrowerEmailVerifiedAt = null;
+            borrowerOtpStatus.textContent = "";
+            borrowerOtpStatus.classList.remove("success");
             error.textContent = "Peminjaman berhasil dicatat.";
             setDefaultLoanDateTime();
             await refresh();
